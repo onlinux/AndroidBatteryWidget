@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, AndroidBatteryWidgetProvider!</string>
+    <string name="app_name">AndroidBatteryWidget</string>
+    <string name="time">time</string>
+    <string name="temperature">température</string>
+    <string name="voltage">voltage</string>
+    <string name="level">niveau</string>
+</resources>
