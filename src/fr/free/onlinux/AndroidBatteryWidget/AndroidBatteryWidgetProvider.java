@@ -37,12 +37,7 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 		}		
 		if (actionName.equals(Intent.ACTION_BATTERY_CHANGED)) {						
 			int rawlevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1); 
-			
-//			updateWidget(context, intent);
-//			Intent service = new Intent(context, BatteryIntentService.class);
-//			service.putExtras(intent);
-//			context.startService(service); // update DB SQlite
-			
+						
 			
     		if (rawlevel != rawlevelOld) {  			
     			updateWidget(context, intent);
@@ -57,7 +52,6 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
-		// TODO Auto-generated method stub
 		Log.i(TAG,"---------- onUpdate");
 		context.getApplicationContext().registerReceiver(this,
 				new IntentFilter(Intent.ACTION_BATTERY_CHANGED));		
@@ -97,7 +91,7 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 		 // TODO Auto-generated method stub
 		Log.i(TAG,"---------- onDisabled ");		
 		super.onDisabled(context);
-		Log.i(TAG,"---------- stopService ");	 
+		 
 	}
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		// TODO Auto-generated method stub
