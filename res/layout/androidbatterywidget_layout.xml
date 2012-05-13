@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:background="@drawable/time_border"
+    android:clickable="true"
     android:gravity="center_vertical|center_horizontal"
     android:orientation="vertical"
-    android:padding="3dp" android:clickable="true">
+    android:padding="3dp" >
 
 <TextView
 	android:id="@+id/level"
@@ -20,7 +21,7 @@
     android:id="@+id/voltage"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:gravity="left"
+    android:gravity="center"
     android:text="@string/voltage"
     android:textColor="#FFFFFF"
     android:textSize="12dip" />
@@ -29,12 +30,12 @@
     android:id="@+id/temperature"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:text="@string/temperature" android:textSize="12dip" android:gravity="left" android:textColor="#FFFFFF"/>
+    android:text="@string/temperature" android:textSize="12dip" android:gravity="center" android:textColor="#FFFFFF"/>
 
 <TextView
     android:id="@+id/time"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:gravity="left" android:textColor="#FFFFFF" android:textSize="12dip" android:text="@string/time"/>
+    android:gravity="center" android:textColor="#FFFFFF" android:textSize="12dip" android:text="@string/time"/>
 
 </LinearLayout>

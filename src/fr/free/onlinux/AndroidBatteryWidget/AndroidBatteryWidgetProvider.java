@@ -1,31 +1,24 @@
 package fr.free.onlinux.AndroidBatteryWidget;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
-
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 	private final static String TAG = "BAT";
 	int rawlevelOld = 0;
 	Boolean debug = false;
-	SimpleDateFormat formatter = new SimpleDateFormat(" HH:mm:ss ");
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context,  intent);
-		final String actionName = intent.getAction();
+		final String action = intent.getAction();
 		if (debug) {
 			Set<String> ks = intent.getExtras().keySet();
 			Iterator<String> iterator = ks.iterator();
@@ -33,15 +26,14 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 				String key = iterator.next();
 				Log.d(TAG, "BAT "+ key + ": " + intent.getIntExtra(key, -1));
 			}
-			Log.d(TAG,"---------- onReceive " + actionName + " intent " + intent);
+			Log.d(TAG,"---------- onReceive " + action + " intent " + intent);
 		}		
-		if (actionName.equals(Intent.ACTION_BATTERY_CHANGED)) {						
-			int rawlevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1); 						
+		if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {						
+			final int rawlevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1); 						
 			if (rawlevel != rawlevelOld) {  			
-				//updateWidget(context, intent);
 				Intent service = new Intent(context, BatteryIntentService.class);
 				service.putExtras(intent);
-				context.startService(service); // update DB SQlite
+				context.startService(service); // update DB SQlite and widget views
 				rawlevelOld = rawlevel;
 			}
 		}
