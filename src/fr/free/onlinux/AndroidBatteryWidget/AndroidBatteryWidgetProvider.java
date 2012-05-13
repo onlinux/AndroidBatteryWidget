@@ -11,21 +11,21 @@ import android.os.BatteryManager;
 import android.util.Log;
 
 public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
-	private final static String TAG = "BAT";
+	private final static String TAG = "Bat";
 	int rawlevelOld = 0;
-	Boolean debug = false;
+	Boolean debug = true;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context,  intent);
 		final String action = intent.getAction();
 		if (debug) {
-			Set<String> ks = intent.getExtras().keySet();
-			Iterator<String> iterator = ks.iterator();
-			while (iterator.hasNext()) {
-				String key = iterator.next();
-				Log.d(TAG, "BAT "+ key + ": " + intent.getIntExtra(key, -1));
-			}
+//			Set<String> ks = intent.getExtras().keySet();
+//			Iterator<String> iterator = ks.iterator();
+//			while (iterator.hasNext()) {
+//				String key = iterator.next();
+//				Log.d(TAG, "BAT "+ key + ": " + intent.getIntExtra(key, -1));
+//			}
 			Log.d(TAG,"---------- onReceive " + action + " intent " + intent);
 		}		
 		if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {						

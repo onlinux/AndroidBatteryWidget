@@ -15,7 +15,7 @@ import android.widget.RemoteViews;
 
 
 public class BatteryIntentService extends IntentService {
-	private final static String TAG = "BAT-S";
+	private final static String TAG = "Bat-S";
 	
 	public BatteryIntentService(){
 		super("BatteryIntentService");
