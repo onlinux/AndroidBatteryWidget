@@ -20,7 +20,12 @@
                 android:resource="@xml/androidbatterywidgetproviderinfo" />
         </receiver>
         
-		<service android:name=".BatteryIntentService" />
+        <service android:name=".AndroidBatteryWidgetProvider$UpdateService" /> 
+	 	<receiver android:name=".BatteryInfo" android:label="BatteryInfo">
+	 	<intent-filter>
+	  		<action android:name="android.intent.action.BATTERY_CHANGED" /> 
+	  	</intent-filter>
+	  	</receiver>
 		
         <activity
             android:name=".AndroidBatteryActivity"
