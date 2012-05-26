@@ -17,7 +17,7 @@ public class BatteryInfo extends BroadcastReceiver {
 	        	final int level = intent.getIntExtra("level", 0);
 	        	if (prevLevel != level )
 	                {
-	        			Log.d(AndroidBatteryWidgetProvider.TAG,"---------- Bmi onReceive " + action + " prevLevel " + prevLevel);
+	        			Log.d(AndroidBatteryWidgetProvider.TAG,"---------- mBI onReceive " + action + " prevLevel " + prevLevel);
 	        			prevLevel = level;
 	                    Intent serviceIntent = new Intent(context, AndroidBatteryWidgetProvider.UpdateService.class);
 	                    serviceIntent.putExtras(intent);

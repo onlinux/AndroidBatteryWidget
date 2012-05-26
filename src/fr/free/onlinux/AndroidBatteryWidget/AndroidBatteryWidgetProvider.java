@@ -3,17 +3,12 @@ package fr.free.onlinux.AndroidBatteryWidget;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
-
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.BatteryManager;
 import android.os.IBinder;
 import android.util.Log;
@@ -24,27 +19,14 @@ import android.app.Service;
 
 public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 	public final static String TAG = "Bat";
-    static final String KEY_PREV_LEVEL = "KEY_PREV_LEVEL";
-    static final String KEY_PREV_STATUS = "KEY_PREV_STATUS";
-    static final String KEY_SCALE = "KEY_SCALE";
-    
-	public static String PREFS_NAME="BATWIDG_PREFS";
-	public static String KEY_LEVEL = "BATWIDG_LEVEL";
-	public static String KEY_PLUGGED = "BATWIDG_PLUGGED";
-	public static String KEY_VOLTAGE = "BATWIDG_VOLTAGE";
-	public static String KEY_TEMPERATURE = "BATWIDG_TEMPERATURE";
-	
-	public static String KEY_CHARGING = "BATWIDG_CHARGING";
+
 	//private static final String TAG = AndroidBatteryWidgetProvider.class.getSimpleName();
-	int rawlevelOld = 0;
-	public static Boolean debug 	= true;
-	
-	
+
+	public static Boolean debug 	= true;	
 
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-			int[] appWidgetIds) {
-		
+			int[] appWidgetIds) {		
 		Log.i(TAG,"---------- onUpdate");	
 		Intent intent = new Intent(context, UpdateService.class);
     	context.startService(intent);
@@ -71,7 +53,8 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     		SimpleDateFormat formatter = new SimpleDateFormat(" HH:mm:ss ");
     		RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.androidbatterywidget_layout);
     		updateViews.setTextViewText(R.id.level, "waiting!");
-    		
+    		final int status = batteryIntent.getIntExtra("status", BatteryManager.BATTERY_STATUS_UNKNOWN);
+    		final int plugged = batteryIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
     		final int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
     		updateViews.setTextViewText(R.id.level, "" + level + " %" );
     		updateViews.setTextViewText(R.id.time, formatter.format(new Date()));
@@ -89,6 +72,16 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     		ComponentName myComponentName = new ComponentName(context, AndroidBatteryWidgetProvider.class);
     		AppWidgetManager manager = AppWidgetManager.getInstance(context);
     		manager.updateAppWidget(myComponentName, updateViews);
+    		
+    		//Second, update database 
+    		
+
+    		
+    		DBHelper db = new DBHelper( this);
+    		db.record( level, status, plugged );
+    		db.deleteOldEntries();
+    		db.close();
+    		if (debug) Log.i( TAG, "---------- Add record: " + level + " time: "+ Calendar.getInstance().getTimeInMillis() );	
     	}
 
     	public void  handleCommand(Intent intent){
@@ -102,19 +95,9 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 	            // So, skip double update processing.
 	            return;
 	        } 
-    		//First update widget views
+    		//update widget views and database
     		updateWidget(getApplicationContext(), intent);
-    		//Second, update database
-    		Log.i(TAG, "BAT handleCommand: " + intent.getExtras());  
-    		final int status = intent.getIntExtra("status", BatteryManager.BATTERY_STATUS_UNKNOWN);
-    		final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-    		final int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
     		
-    		DBHelper db = new DBHelper( this);
-    		db.record( level, status, plugged );
-    		db.deleteOldEntries();
-    		db.close();
-    		if (debug) Log.i( TAG, "---------- Add record: " + level + " time: "+ Calendar.getInstance().getTimeInMillis() );	
     	}
     	
     	
