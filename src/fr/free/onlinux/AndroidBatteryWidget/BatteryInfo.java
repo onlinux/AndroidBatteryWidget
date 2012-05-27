@@ -16,7 +16,7 @@ public class BatteryInfo extends BroadcastReceiver {
     	
     	IntentFilter mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        context.registerReceiver(this, mIntentFilter);
+        mContext.registerReceiver(this, mIntentFilter);
     }
     
 	@Override

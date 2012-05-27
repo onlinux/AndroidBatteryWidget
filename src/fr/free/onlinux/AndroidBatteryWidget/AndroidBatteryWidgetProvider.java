@@ -73,15 +73,19 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     		AppWidgetManager manager = AppWidgetManager.getInstance(context);
     		manager.updateAppWidget(myComponentName, updateViews);
     		
-    		//Second, update database 
-    		
+    		//Second, update database in a thread  		
 
-    		
-    		DBHelper db = new DBHelper( this);
-    		db.record( level, status, plugged );
-    		db.deleteOldEntries();
-    		db.close();
-    		if (debug) Log.i( TAG, "---------- Add record: " + level + " time: "+ Calendar.getInstance().getTimeInMillis() );	
+    		new Thread (new Runnable(){
+    			public void run(){
+    				final Context c=getApplicationContext();
+	    			DBHelper db = new DBHelper(c);
+	    			db.record( level, status, plugged );
+	    			db.deleteOldEntries();
+	    			db.close();
+	    			if (debug) Log.i( TAG, "---------- Add record: " + level + " time: "+ Calendar.getInstance().getTimeInMillis() );	
+    			}
+    		}).start();
+
     	}
 
     	public void  handleCommand(Intent intent){
