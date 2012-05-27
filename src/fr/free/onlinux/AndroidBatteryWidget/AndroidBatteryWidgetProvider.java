@@ -87,10 +87,10 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     	public void  handleCommand(Intent intent){
     		if(mBI == null)
 	        {
-	        	mBI = new BatteryInfo();
-	        	IntentFilter mIntentFilter = new IntentFilter();
-	            mIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-	            registerReceiver(mBI, mIntentFilter);
+	        	mBI = new BatteryInfo(this);
+//	        	IntentFilter mIntentFilter = new IntentFilter();
+//	            mIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+//	            registerReceiver(mBI, mIntentFilter);
 	            // After registering mBI, another update is immediately processed.
 	            // So, skip double update processing.
 	            return;
@@ -109,11 +109,10 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     	@Override
     	public int onStartCommand(Intent intent, int flags, int startId) {
     		if (debug)
-    			Log.d(TAG, "----------------- onStartCommand intent ->" + intent.getAction());	
+    			Log.d(TAG, "----------------- onStartCommand"); 	
     		handleCommand(intent);     
-            // We do not want this service to continue running until it is explicitly
-            // stopped, so return not sticky.
-    		// stopSelf();
+    		// The service has to be running otherwise the broadcast ACTION_BATTERY_CHANGED wont be received anymore
+    		// thats why it returns START_STICKY
             return START_STICKY;
     	}
     	
