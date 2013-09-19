@@ -14,7 +14,6 @@ import android.os.BatteryManager;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 import android.app.PendingIntent;
 import android.app.Service;
 
@@ -81,7 +80,6 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 	
 	
     public static class UpdateService extends Service {       
-    	//BatteryInfo mBI = null;
     	
     	public void updateWidget(Context context, Intent batteryIntent){
     		if (debug) Log.i(TAG,"---------- updateWidget");
@@ -124,13 +122,6 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     	}
 
     	public void  handleCommand(Intent intent){
-    		/*if(mBI == null)
-	        {
-	        	//mBI = new BatteryInfo(this);
-	            // After registering mBI, another update is immediately processed.
-	            // So, skip double update processing.
-	            return;
-	        } */
     		//update widget views and database
     		updateWidget(getApplicationContext(), intent);
     		
