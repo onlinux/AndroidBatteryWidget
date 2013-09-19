@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,40 +14,74 @@ import android.os.BatteryManager;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 import android.app.PendingIntent;
 import android.app.Service;
 
 
 public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
 	public final static String TAG = "Bat";
-
+	private int prevLevel = -1;
 	//private static final String TAG = AndroidBatteryWidgetProvider.class.getSimpleName();
-
+	
+	
 	public static Boolean debug 	= true;	
-
+	public static BroadcastReceiver mBI = null;
+	
+	@Override
+	public void onEnabled(Context context) {
+		super.onEnabled(context);
+		mBI= this;
+		Log.i(TAG,"---------- onEnabled");		
+    	IntentFilter mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        context.getApplicationContext().registerReceiver(mBI, mIntentFilter);      
+        Log.i(TAG,"---------- registerReceiver:"+ mBI);
+	}
+	
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		// TODO Auto-generated method stub
+		super.onReceive(context,  intent);
+		final String action = intent.getAction();	
+		Log.i(TAG,"--------------- onReceive " + action );
+		try
+        {		
+	        if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {  
+	        	final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+	        	if (prevLevel != level )
+	                {
+	        			Log.d(AndroidBatteryWidgetProvider.TAG,"---------- onReceive() " + action + " prevLevel " + prevLevel);
+	        			prevLevel = level;
+	                    Intent serviceIntent = new Intent(context, UpdateService.class);
+	                    serviceIntent.putExtras(intent);
+	                    context.startService(serviceIntent);
+	               }
+	        }
+        }catch(Exception e){Log.e(AndroidBatteryWidgetProvider.TAG, "", e);}
+		
+	}
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {		
-		Log.i(TAG,"---------- onUpdate");	
-		Intent intent = new Intent(context, UpdateService.class);
-    	context.startService(intent);
+		Log.i(TAG,"---------- onUpdate");
 	}
 	
 
 	public void onDisabled(Context context) {
 		// TODO Auto-generated method stub
-		Log.i(TAG,"---------- onDisabled ");		
-		super.onDisabled(context);
+		Log.i(TAG,"---------- onDisabled unregisterReceiver: " + mBI);				
 		try
 		{
-			context.stopService(new Intent(context, UpdateService.class));//unregisterReceiver(mBI);
+			context.getApplicationContext().unregisterReceiver(mBI);
 		}catch(Exception e){Log.e(TAG,"",e);}
-
+		super.onDisabled(context);
 	}
 	
 	
     public static class UpdateService extends Service {       
-    	BatteryInfo mBI = null;
+    	//BatteryInfo mBI = null;
     	
     	public void updateWidget(Context context, Intent batteryIntent){
     		if (debug) Log.i(TAG,"---------- updateWidget");
@@ -57,7 +92,7 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     		final int plugged = batteryIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
     		final int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
     		updateViews.setTextViewText(R.id.level, "" + level + " %" );
-    		updateViews.setTextViewText(R.id.time, formatter.format(new Date()));
+    		//updateViews.setTextViewText(R.id.time, formatter.format(new Date()));
     		final int temperature = batteryIntent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
     		String tempString= String.format("%.0f°C", new Float(temperature/10));
     		if (debug) Log.d(TAG,"BAT:" + tempString + " " + level + "%");
@@ -89,16 +124,13 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     	}
 
     	public void  handleCommand(Intent intent){
-    		if(mBI == null)
+    		/*if(mBI == null)
 	        {
-	        	mBI = new BatteryInfo(this);
-//	        	IntentFilter mIntentFilter = new IntentFilter();
-//	            mIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-//	            registerReceiver(mBI, mIntentFilter);
+	        	//mBI = new BatteryInfo(this);
 	            // After registering mBI, another update is immediately processed.
 	            // So, skip double update processing.
 	            return;
-	        } 
+	        } */
     		//update widget views and database
     		updateWidget(getApplicationContext(), intent);
     		
@@ -115,23 +147,14 @@ public class AndroidBatteryWidgetProvider extends AppWidgetProvider {
     		if (debug)
     			Log.d(TAG, "----------------- onStartCommand"); 	
     		handleCommand(intent);     
-    		// The service has to be running otherwise the broadcast ACTION_BATTERY_CHANGED wont be received anymore
-    		// thats why it returns START_STICKY
-            return START_STICKY;
+    		stopSelf();
+			return START_NOT_STICKY;
     	}
     	
     	@Override
     	public void onDestroy() {
     		super.onDestroy();
-    		try{  				
-    			if(mBI != null) {
-    				if (debug)
-        			Log.d(TAG, "----------------- onDestroy: unregisterReceiver(mBI)" );
-    				unregisterReceiver(mBI);
-    			}
-    			
-    		}catch(Exception e)
-    		{Log.e(TAG, "", e);}
+
     	}
 		@Override
 		public IBinder onBind(Intent arg0) {
